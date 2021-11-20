@@ -8,6 +8,7 @@ function setup () {
   # make executables in src/ visible to PATH
   PATH="$DIR/bin:$PATH"
   load "./setup.sh"
+  cd "./test/android" || exit 1
 }
 
 function teardown() {
@@ -15,8 +16,8 @@ function teardown() {
 }
 
 @test "goto workspace root by default" {
-  cd "./test/android"
   g
+
   expected_dir="$DIR/test"
   actual_dir="$(pwd)"
   echo "expected dir: $expected_dir"
@@ -30,8 +31,9 @@ function teardown() {
                             '{build: $build}')"
   export WORKSPACE_BOOKMARKS
   echo "bookmarks: $WORKSPACE_BOOKMARKS"
-  cd "./test/android"
+
   g build
+
   expected_dir="$DIR/test/poky/build"
   actual_dir="$(pwd)"
   echo "expected dir: $expected_dir"

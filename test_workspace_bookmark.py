@@ -20,13 +20,13 @@ BUILD_DIRECTORY = os.path.join(REPO_DIRECTORY, "poky/build")
 # Main function tests
 def test_print_path_to_workspace_root_by_default(capsys):
     """
-    By default print path to  directory which contains .repo.
+    By default print path to directory which contains .repo.
 
     /test/android $ g
     /test $
     """
     os.chdir(ANDROID_DIRECTORY)
-    workspace_bookmark.main()
+    workspace_bookmark.main("")
     assert REPO_DIRECTORY == capsys.readouterr().out.strip()
 
 
@@ -47,7 +47,7 @@ def test_print_path_to_specified_destination(capsys):
 def test_get_path_to_workspace_root():
     """See if we can guess where the root of a workspace is."""
     os.chdir(ANDROID_DIRECTORY)
-    path_to_root = workspace_bookmark.path_to("root")
+    path_to_root = workspace_bookmark.path_to("root", {"root": "./"})
     assert REPO_DIRECTORY == path_to_root
 
 
