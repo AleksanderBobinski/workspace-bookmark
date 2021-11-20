@@ -42,6 +42,13 @@ def main(destination: str = "root"):
         bookmarks = os.environ["WORKSPACE_BOOKMARKS"]
     except KeyError:
         bookmarks = json.dumps({"root": "./"})
+        print("Warning: WORKSPACE_BOOKMARKS is not set.\n"
+              "Try setting it to something similar to this:\n"
+              "export WORKSPACE_BOOKMARKS='{\n"
+              "  \"build\": \"poky/build\",\n"
+              "  \"android\": \"android\",\n"
+              "  \"manifest\": \".repo/manifests\"\n"
+              "}'", file=sys.stderr)
     print(path_to(destination, json.loads(bookmarks)))
 
 

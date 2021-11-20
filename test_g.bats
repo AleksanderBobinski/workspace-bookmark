@@ -51,3 +51,23 @@ function teardown() {
   echo "  actual dir: $actual_dir"
   [ "$expected_dir" = "$actual_dir" ]
 }
+
+@test "warn if WORKSPACE_BOOKMARKS is not set" {
+  unset WORKSPACE_BOOKMARKS
+
+  run g
+
+  warning_message="$(cat << EOF
+Warning: WORKSPACE_BOOKMARKS is not set.
+Try setting it to something similar to this:
+export WORKSPACE_BOOKMARKS='{
+  "build": "poky/build",
+  "android": "android",
+  "manifest": ".repo/manifests"
+}'
+EOF
+)"
+  echo "$warning_message"
+  echo "$output"
+  [ "$warning_message" = "$output" ]
+}

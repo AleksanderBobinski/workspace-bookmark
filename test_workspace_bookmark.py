@@ -56,6 +56,25 @@ def test_print_path_to_specified_destination(capsys):
     assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
 
 
+def test_print_warning_if_env_is_unset(capsys):
+    """
+    Make sure to print a warning with instructions if the lookup table
+    is not defined in WORKSPACE_BOOKMARKS.
+    """
+    os.chdir(ANDROID_DIRECTORY)
+    del os.environ["WORKSPACE_BOOKMARKS"]
+    workspace_bookmark.main("")
+    warning_message = \
+        "Warning: WORKSPACE_BOOKMARKS is not set.\n" + \
+        "Try setting it to something similar to this:\n" + \
+        "export WORKSPACE_BOOKMARKS='{\n" + \
+        "  \"build\": \"poky/build\",\n" + \
+        "  \"android\": \"android\",\n" + \
+        "  \"manifest\": \".repo/manifests\"\n" + \
+        "}'"
+    assert warning_message == capsys.readouterr().err.strip()
+
+
 # Unit tests
 def test_get_path_to_workspace_root():
     """See if we can guess where the root of a workspace is."""
