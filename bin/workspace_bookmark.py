@@ -10,16 +10,22 @@ Example usage:
 This script works along with a function defined in .bashrc
 g () { p=$(workspace-bookmark.py $1) && cd $p || echo $p; }
 """
+import json
 import os
 import sys
+from typing import Dict, Optional
 
 
-def path_to(destination: str) -> str:
+def path_to(destination: str,
+            bookmarks: Optional[Dict[str, str]] = None) -> str:
     """Return path to desired destination based on a lookup table."""
-    current_path = os.getcwd()
-    while ".repo" not in os.listdir(current_path):
-        current_path = "/".join(current_path.split("/")[:-1])
-    return current_path
+    if bookmarks is None:
+        bookmarks = {"root": "./"}
+    workspace_root = os.getcwd()
+    while ".repo" not in os.listdir(workspace_root):
+        workspace_root = "/".join(workspace_root.split("/")[:-1])
+    path = os.path.join(workspace_root, bookmarks[destination])
+    return os.path.abspath(path)
 
 
 def main(destination: str = "root"):
@@ -28,7 +34,13 @@ def main(destination: str = "root"):
 
     This is expected to be later picked up by cd.
     """
-    print(path_to(destination))
+    if destination == "":
+        destination = "root"
+    try:
+        bookmarks = os.environ["WORKSPACE_BOOKMARKS"]
+    except KeyError:
+        bookmarks = json.dumps({"root": "./"})
+    print(path_to(destination, json.loads(bookmarks)))
 
 
 if __name__ == "__main__":

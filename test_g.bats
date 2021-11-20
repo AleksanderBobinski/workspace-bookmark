@@ -23,3 +23,18 @@ function teardown() {
   echo "  actual dir: $actual_dir"
   [ "$expected_dir" = "$actual_dir" ]
 }
+
+@test "goto specified destination directory" {
+  WORKSPACE_BOOKMARKS="$(jq -n \
+                            --arg build "poky/build" \
+                            '{build: $build}')"
+  export WORKSPACE_BOOKMARKS
+  echo "bookmarks: $WORKSPACE_BOOKMARKS"
+  cd "./test/android"
+  g build
+  expected_dir="$DIR/test/poky/build"
+  actual_dir="$(pwd)"
+  echo "expected dir: $expected_dir"
+  echo "  actual dir: $actual_dir"
+  [ "$expected_dir" = "$actual_dir" ]
+}
