@@ -21,6 +21,8 @@ def path_to(destination: str,
     """Return path to desired destination based on a lookup table."""
     if bookmarks is None:
         bookmarks = {"root": "./"}
+    if "root" not in bookmarks:
+        bookmarks["root"] = "./"
     workspace_root = os.getcwd()
     while ".repo" not in os.listdir(workspace_root):
         workspace_root = "/".join(workspace_root.split("/")[:-1])

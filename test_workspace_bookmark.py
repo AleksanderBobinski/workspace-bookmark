@@ -30,6 +30,19 @@ def test_print_path_to_workspace_root_by_default(capsys):
     assert REPO_DIRECTORY == capsys.readouterr().out.strip()
 
 
+def test_print_path_to_workspace_root_by_default_with_env_set(capsys):
+    """
+    By default print path to directory which contains .repo.
+
+    /test/android $ g
+    /test $
+    """
+    os.chdir(ANDROID_DIRECTORY)
+    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
+    workspace_bookmark.main("")
+    assert REPO_DIRECTORY == capsys.readouterr().out.strip()
+
+
 def test_print_path_to_specified_destination(capsys):
     """
     Print path to specified directory based on a provided lookup table.
