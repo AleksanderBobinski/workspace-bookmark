@@ -75,6 +75,24 @@ def test_print_warning_if_env_is_unset(capsys):
     assert warning_message == capsys.readouterr().err.strip()
 
 
+def test_gracefull_exit_if_not_in_workspace(capsys):
+    """
+    Make sure to print a helpful error message if workspace root can't be
+    found.
+    """
+    os.chdir(os.path.join(REPO_DIRECTORY, ".."))
+    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
+    error_code = workspace_bookmark.main("")
+    exit_message = \
+        ("Warning: There is no .repo directory in or above the current "
+         "directory.\nThis tool is intended to work in different workspaces "
+         "that have a common\nlayout as is often the case with workspaces "
+         "downloaded by repo. If this\nis not your use-case switch to "
+         "autojump-rs or propose an improvement to\nthis script.")
+    assert exit_message == capsys.readouterr().err.strip()
+    assert error_code == 1
+
+
 # Unit tests
 def test_get_path_to_workspace_root():
     """See if we can guess where the root of a workspace is."""

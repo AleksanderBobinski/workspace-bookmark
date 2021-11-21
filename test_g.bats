@@ -71,3 +71,24 @@ EOF
   echo "$output"
   [ "$warning_message" = "$output" ]
 }
+
+@test "exit gracefully when not in a workspace" {
+	cd "$DIR"
+
+  run g
+
+  exit_message="$(cat << EOF
+Warning: There is no .repo directory in or above the current directory.
+This tool is intended to work in different workspaces that have a common
+layout as is often the case with workspaces downloaded by repo. If this
+is not your use-case switch to autojump-rs or propose an improvement to
+this script.
+EOF
+)"
+  echo "expected message: $exit_message"
+  echo "  actual message: $output"
+  [ "$exit_message" = "$output" ]
+	echo "expected return code: 1"
+	echo "  actual return code: $status"
+	[ 1 -eq "$status" ]
+}

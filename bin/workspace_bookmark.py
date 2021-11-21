@@ -30,7 +30,7 @@ def path_to(destination: str,
     return os.path.abspath(path)
 
 
-def main(destination: str = "root"):
+def main(destination: str = "root") -> int:
     """
     Print path to destination directory.
 
@@ -49,8 +49,19 @@ def main(destination: str = "root"):
               "  \"android\": \"android\",\n"
               "  \"manifest\": \".repo/manifests\"\n"
               "}'", file=sys.stderr)
-    print(path_to(destination, json.loads(bookmarks)))
+    try:
+        print(path_to(destination, json.loads(bookmarks)))
+    except FileNotFoundError:
+        print("Warning: There is no .repo directory in or above the current "
+              "directory.\nThis tool is intended to work in different "
+              "workspaces that have a common\nlayout as is often the case "
+              "with workspaces downloaded by repo. If this\nis not your "
+              "use-case switch to autojump-rs or propose an improvement to\n"
+              "this script.",
+              file=sys.stderr)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main(*(sys.argv[1:]))
+    sys.exit(main(*(sys.argv[1:])))
