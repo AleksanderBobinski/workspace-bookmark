@@ -60,6 +60,16 @@ def main(destination: str = "root") -> int:
               "this script.",
               file=sys.stderr)
         return 1
+    except KeyError:
+        proposed_bookmarks = json.loads(bookmarks)
+        proposed_bookmarks[destination] = "<YOUR PATH>"
+        proposed_bookmarks = json.dumps(proposed_bookmarks, indent=2)
+        print(f"Warning: There is no \"{destination}\" in WORKSPACE_BOOKMARKS."
+              "\nTry setting it:\n"
+              f"export WORKSPACE_BOOKMARKS='{proposed_bookmarks}'",
+              file=sys.stderr,
+              end="")
+        return 2
     return 0
 
 

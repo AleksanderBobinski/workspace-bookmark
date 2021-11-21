@@ -95,3 +95,28 @@ EOF
 	echo "  actual return code: $status"
 	[ 1 -eq "$status" ]
 }
+
+@test "exit gracefully when destination is not in bookmarks" {
+  dummy_destination="the moon"
+  proposed_fix="$(echo ''"${WORKSPACE_BOOKMARKS}" '{'\""$dummy_destination"\": \"\<YOUR PATH\>\"'}''' | jq -s add)"
+  exit_message="$(cat <<EOF
+Warning: There is no "$dummy_destination" in WORKSPACE_BOOKMARKS.
+Try setting it:
+export WORKSPACE_BOOKMARKS='$proposed_fix'
+EOF
+)"
+
+  run g "$dummy_destination"
+
+  echo "expected message: $exit_message"
+  echo "  actual message: $output"
+  [ "$exit_message" = "$output" ]
+	echo "expected return code: 2"
+	echo "  actual return code: $status"
+	[ 2 -eq "$status" ]
+  expected_dir="$DIR/test/android"
+  actual_dir="$(pwd)"
+  echo "expected dir: $expected_dir"
+  echo "  actual dir: $actual_dir"
+  [ "$expected_dir" = "$actual_dir" ]
+}

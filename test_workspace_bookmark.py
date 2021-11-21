@@ -93,6 +93,27 @@ def test_gracefull_exit_if_not_in_workspace(capsys):
     assert error_code == 1
 
 
+def test_gracefull_exit_if_destination_is_not_bookmarked(capsys):
+    """
+    Make sure to print a helpful error message if a chosen destination is not
+    in WORKSPACE_BOOKMARKS.
+    """
+    os.chdir(ANDROID_DIRECTORY)
+    bookmarks = {"build": "poky/build"}
+    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps(bookmarks)
+    destination = "someplace"
+    bookmarks[destination] = "<YOUR PATH>"
+    exit_message = \
+        (f"Warning: There is no \"{destination}\" in WORKSPACE_BOOKMARKS.\n"
+         "Try setting it:\n"
+         f"export WORKSPACE_BOOKMARKS='{json.dumps(bookmarks, indent=2)}'")
+
+    error_code = workspace_bookmark.main(destination)
+
+    assert exit_message == capsys.readouterr().err.strip()
+    assert error_code == 2
+
+
 # Unit tests
 def test_get_path_to_workspace_root():
     """See if we can guess where the root of a workspace is."""
