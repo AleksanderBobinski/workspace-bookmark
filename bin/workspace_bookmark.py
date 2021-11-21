@@ -30,13 +30,16 @@ def path_to(destination: str,
     return os.path.abspath(path)
 
 
-def main(destination: str = "root") -> int:
+def main(destination: str = "") -> int:
     """
     Print path to destination directory.
 
     This is expected to be later picked up by cd.
     """
     if destination == "":
+        # When g is called without parameters
+        # $ g
+        # The first parameter $1 is actually ""
         destination = "root"
     try:
         bookmarks = os.environ["WORKSPACE_BOOKMARKS"]
