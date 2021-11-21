@@ -13,7 +13,10 @@ function setup () {
                             '{build: $build}')"
   export WORKSPACE_BOOKMARKS
   echo "bookmarks: $WORKSPACE_BOOKMARKS"
-  cd "./test/android" || exit 1
+  mkdir -p "$DIR/test/android" \
+           "$DIR/test/poky/build" \
+           "$DIR/test/.repo/manifests"
+  cd "$DIR/test/android" || exit 1
 }
 
 function teardown() {
