@@ -7,7 +7,7 @@ g () {
 	e=$?;
 	if [ $e -eq 0 ]
 	then 
-		cd "$p" || exit 1
+		cd "$p" || return $?
 	else 
 		echo "$p";
 	fi

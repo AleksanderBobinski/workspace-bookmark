@@ -120,3 +120,25 @@ EOF
   echo "  actual dir: $actual_dir"
   [ "$expected_dir" = "$actual_dir" ]
 }
+
+@test "do nothing when destination path does not exist" {
+  # cd will print an error message, that's enough.
+  dummy_destination="the moon"
+  WORKSPACE_BOOKMARKS="$(jq -n \
+                            --arg the_moon "non-existant" \
+                            '{"the moon": $the_moon}')"
+  export WORKSPACE_BOOKMARKS
+  function run_and_grab_pwd () {
+    g "$dummy_destination"
+    pwd
+  }
+
+  run ! g "$dummy_destination"
+  run run_and_grab_pwd
+  actual_dir="$(echo "$output" | tail -n 1)"
+
+  expected_dir="$DIR/test/android"
+  echo "expected dir: $expected_dir"
+  echo "  actual dir: $actual_dir"
+  [ "$expected_dir" = "$actual_dir" ]
+}
