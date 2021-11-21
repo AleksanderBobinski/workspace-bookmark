@@ -13,16 +13,11 @@ g () { p=$(workspace-bookmark.py $1) && cd $p || echo $p; }
 import json
 import os
 import sys
-from typing import Dict, Optional
+from typing import Dict
 
 
-def path_to(destination: str,
-            bookmarks: Optional[Dict[str, str]] = None) -> str:
+def path_to(destination: str, bookmarks: Dict[str, str]) -> str:
     """Return path to desired destination based on a lookup table."""
-    if bookmarks is None:
-        bookmarks = {"root": "./"}
-    if "root" not in bookmarks:
-        bookmarks["root"] = "./"
     workspace_root = os.getcwd()
     while ".repo" not in os.listdir(workspace_root):
         workspace_root = "/".join(workspace_root.split("/")[:-1])
@@ -36,15 +31,11 @@ def main(destination: str = "") -> int:
 
     This is expected to be later picked up by cd.
     """
-    if destination == "":
-        # When g is called without parameters
-        # $ g
-        # The first parameter $1 is actually ""
-        destination = "root"
+    default_destination = {"root": "./"}
     try:
         bookmarks = os.environ["WORKSPACE_BOOKMARKS"]
     except KeyError:
-        bookmarks = json.dumps({"root": "./"})
+        bookmarks = json.dumps(default_destination)
         print("Warning: WORKSPACE_BOOKMARKS is not set.\n"
               "Try setting it to something similar to this:\n"
               "export WORKSPACE_BOOKMARKS='{\n"
@@ -52,6 +43,14 @@ def main(destination: str = "") -> int:
               "  \"android\": \"android\",\n"
               "  \"manifest\": \".repo/manifests\"\n"
               "}'", file=sys.stderr)
+    if destination == "":
+        # When g is called without parameters
+        # $ g
+        # The first parameter $1 is actually ""
+        destination = list(default_destination)[0]
+        overwritten_bookmarks = json.loads(bookmarks)
+        overwritten_bookmarks[destination] = default_destination[destination]
+        bookmarks = json.dumps(overwritten_bookmarks)
     try:
         print(path_to(destination, json.loads(bookmarks)))
     except FileNotFoundError:
