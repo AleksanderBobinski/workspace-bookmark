@@ -51,8 +51,19 @@ def main(destination: str = "") -> int:
         overwritten_bookmarks = json.loads(bookmarks)
         overwritten_bookmarks[destination] = default_destination[destination]
         bookmarks = json.dumps(overwritten_bookmarks)
+
+    # There are many edge cases here but none of them are considered.
+    # 1. Bookmark has a '/' in it's name.
+    # 2. There are two or more bookmarks named "one" and "one/one".
+    # 3. A bookmark is in the path destination_bookmark/path/bookmark/
+    bookmark_path = destination.split("/")
+    if len(bookmark_path) > 1:
+        path_to_append = "/" + "/".join(bookmark_path[1:])
+    else:
+        path_to_append = ""
+    destination = bookmark_path[0]
     try:
-        print(path_to(destination, json.loads(bookmarks)))
+        print(path_to(destination, json.loads(bookmarks)) + path_to_append)
     except FileNotFoundError:
         print("Warning: There is no .repo directory in or above the current "
               "directory.\nThis tool is intended to work in different "

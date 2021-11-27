@@ -53,6 +53,12 @@ export WORKSPACE_BOOKMARKS='{
 Things to use daily:
 
 ```sh
-cd some_workspace
-g manifest
+cd some_workspace # with a .repo directory
+some_workspace $ g manifest
+some_workspace/.repo/manifests $ g android
+some_workspace/android $ g
+some_workspace $ g build
+some_workspace/poky/build $ g android
+some_workspace/android $ g poky/build # you can append paths relative to bookmark
+some_workspace/poky/build $
 ```

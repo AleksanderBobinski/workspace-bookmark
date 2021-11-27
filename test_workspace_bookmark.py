@@ -56,6 +56,21 @@ def test_print_path_to_specified_destination(capsys):
     assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
 
 
+def test_print_path_to_specified_destination_any_beyond(capsys):
+    """
+    Print path to specified directory based on a provided lookup table while
+    accounting for a path that is appended to the bookmark.
+
+    For example:
+    $ workspace_bookmark.py bookmark/some/path
+    /abs/path/to/bookmark/some/path
+    """
+    os.chdir(ANDROID_DIRECTORY)
+    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"poky": "poky"})
+    workspace_bookmark.main("poky/build")
+    assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
+
+
 def test_print_warning_if_env_is_unset(capsys):
     """
     Make sure to print a warning with instructions if the lookup table

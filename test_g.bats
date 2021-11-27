@@ -10,7 +10,8 @@ function setup () {
 
   WORKSPACE_BOOKMARKS="$(jq -n \
                             --arg build "poky/build" \
-                            '{build: $build}')"
+                            --arg poky "poky" \
+                            '{poky: $poky, build: $build}')"
   export WORKSPACE_BOOKMARKS
   echo "bookmarks: $WORKSPACE_BOOKMARKS"
   mkdir -p "$DIR/test/android" \
@@ -138,6 +139,16 @@ EOF
   actual_dir="$(echo "$output" | tail -n 1)"
 
   expected_dir="$DIR/test/android"
+  echo "expected dir: $expected_dir"
+  echo "  actual dir: $actual_dir"
+  [ "$expected_dir" = "$actual_dir" ]
+}
+
+@test "goto specified destination directory and beyond" {
+  g poky/build
+
+  expected_dir="$DIR/test/poky/build"
+  actual_dir="$(pwd)"
   echo "expected dir: $expected_dir"
   echo "  actual dir: $actual_dir"
   [ "$expected_dir" = "$actual_dir" ]
