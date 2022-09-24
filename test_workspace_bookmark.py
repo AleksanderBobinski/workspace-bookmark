@@ -14,6 +14,7 @@ from bin import workspace_bookmark
 
 REPO_DIRECTORY = os.path.join(os.path.dirname(__file__), "test")
 ANDROID_DIRECTORY = os.path.join(REPO_DIRECTORY, "android")
+POKY_DIRECTORY = os.path.join(REPO_DIRECTORY, "poky")
 BUILD_DIRECTORY = os.path.join(REPO_DIRECTORY, "poky/build")
 
 
@@ -148,3 +149,23 @@ def test_get_path_to_specified_directory():
                                                     destination="build",
                                                     bookmarks=bookmarks)
     assert BUILD_DIRECTORY == path_to_destination
+
+
+# Quirks
+def test_use_magic_file_instead_of_repo(capsys):
+    """
+    Search for a user defined magic file instead of .repo.
+
+    In a pathological case where there are multiple .repo directories in a
+    workspace search for a user specified magic file instead to determine where
+    workspace root is located.
+    """
+    os.chdir(POKY_DIRECTORY)
+    bookmarks = {"build": "build"}
+    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps(bookmarks)
+    workspace_root_magic_file = "build"
+    os.environ["WORKSPACE_BOOKMARK_MAGIC_FILE"] = workspace_root_magic_file
+
+    workspace_bookmark.main("build")
+
+    assert BUILD_DIRECTORY == capsys.readouterr().out.strip()

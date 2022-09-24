@@ -30,6 +30,15 @@ to have two or more directories of the same name but different paths to be
 bookmarked and will always jump the correct directory inside the currently
 used workspace regardless of where inside the workspace the caller is.
 
+In pathological cases there can be multiple .repo directories in a workspace.
+For such situations you can override the default behavior and instead of
+looking for '.repo' make the tool look for a custom
+'WORKSPACE_BOOKMARK_MAGIC_FILE' with:
+
+```sh
+export WORKSPACE_BOOKMARK_MAGIC_FILE='.wsmagic'
+```
+
 ## Code
 
 The tool is separated into two parts:

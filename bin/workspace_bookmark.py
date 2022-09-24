@@ -16,10 +16,12 @@ import sys
 from typing import Dict
 
 
-def path_to(destination: str, bookmarks: Dict[str, str]) -> str:
+def path_to(destination: str,
+            bookmarks: Dict[str, str],
+            magic_file: str = ".repo") -> str:
     """Return path to desired destination based on a lookup table."""
     workspace_root = os.getcwd()
-    while ".repo" not in os.listdir(workspace_root):
+    while magic_file not in os.listdir(workspace_root):
         workspace_root = "/".join(workspace_root.split("/")[:-1])
     path = os.path.join(workspace_root, bookmarks[destination])
     return os.path.abspath(path)
@@ -32,6 +34,10 @@ def main(destination: str = "") -> int:
     This is expected to be later picked up by cd.
     """
     default_destination = {"root": "./"}
+    try:
+        magic_file = os.environ["WORKSPACE_BOOKMARK_MAGIC_FILE"]
+    except KeyError:
+        magic_file = ".repo"
     try:
         bookmarks = os.environ["WORKSPACE_BOOKMARKS"]
     except KeyError:
@@ -63,7 +69,9 @@ def main(destination: str = "") -> int:
         path_to_append = ""
     destination = bookmark_path[0]
     try:
-        print(path_to(destination, json.loads(bookmarks)) + path_to_append)
+        print(path_to(destination,
+                      json.loads(bookmarks),
+                      magic_file) + path_to_append)
     except FileNotFoundError:
         print("Warning: There is no .repo directory in or above the current "
               "directory.\nThis tool is intended to work in different "
