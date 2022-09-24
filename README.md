@@ -27,7 +27,7 @@ key being the name and the value being a path relative to the workspace root.
 
 This is predictable since a workspace only has one .repo directory. It allows
 to have two or more directories of the same name but different paths to be
-bookmarked and will always jump the the correct directory inside the currently
+bookmarked and will always jump the correct directory inside the currently
 used workspace regardless of where inside the workspace the caller is.
 
 ## Code
