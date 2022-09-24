@@ -1,0 +1,11 @@
+name: test
+on: [push]
+jobs:
+  test:
+    runs-on: ghcr.io/aleksanderbobinski/workspace-bookmark:develop
+    steps:
+      - uses: actions/checkout@v3
+      - run: ./create_test_dir.sh
+      - run: source setup.sh && python3 -m pytest ./test_workspace_bookmark.py
+      - run: source ./setup.sh && cd test && ../test_g.bats
+
