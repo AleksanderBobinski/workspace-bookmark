@@ -12,7 +12,7 @@ import json
 import os.path
 from bin import workspace_bookmark
 
-REPO_DIRECTORY = os.path.join(os.path.dirname(__file__), "test")
+REPO_DIRECTORY = os.path.join(os.getcwd())
 ANDROID_DIRECTORY = os.path.join(REPO_DIRECTORY, "android")
 POKY_DIRECTORY = os.path.join(REPO_DIRECTORY, "poky")
 BUILD_DIRECTORY = os.path.join(REPO_DIRECTORY, "poky/build")
