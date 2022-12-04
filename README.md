@@ -39,6 +39,68 @@ looking for '.repo' make the tool look for a custom
 export WORKSPACE_BOOKMARK_MAGIC_FILE='.wsmagic'
 ```
 
+It may happen that there is a need to switch between a typical repo workspace
+and a pathological but similar looking workspace layout frequently. For example
+a regular workspace layout may look like this:
+
+```text
+.
+├── .repo
+├── android
+│   └── vendor
+└── poky
+    └── build
+```
+
+The pathological workspace may look like this:
+
+```text
+.
+├── .wsmagic
+├── case1
+|   ├── .repo
+│   ├── android
+│   │   └── vendor
+│   └── poky
+│       └── build
+└── case2
+    ├── .repo
+    ├── android
+    └── poky
+        └── build
+```
+
+One way to deal with this minor divergence is to introduce optional path elements.
+With this the same WORKSPACE_BOOKMARKS dict may be used for the pathological and
+non-pathological case.
+
+```text
+export WORKSPACE_BOOKMARKS='{
+  "build": "{case2/}poky/build",
+  "vendor": "{case1/}android/vendor",
+  "repo": ".repo"
+}'
+```
+
+Using the WORKSPACE_BOOKMARKS from above for a regular workspace we would get:
+
+|cwd |bookmark|new cwd       |
+------------------------------
+|root|build   |poky/build    |
+|root|vendor  |android/vendor|
+|root|repo    |.repo         |
+
+For a pathological workspace we would get:
+
+|cwd             |bookmark|new cwd             |
+------------------------------------------------
+|root            |build   |case2/poky/build    |
+|root            |vendor  |case1/android/vendor|
+|case1/poky/build|repo    |case1/.repo         |
+
+Note how in case of ambiguous locations (to .repo for example) the tool targets
+the one closer to the current location is picked.
+
 ## Code
 
 The tool is separated into two parts:
