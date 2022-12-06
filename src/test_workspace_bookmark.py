@@ -10,7 +10,7 @@ shown in the tests below.
 """
 import json
 import os.path
-from bin import workspace_bookmark
+import workspace_bookmark
 
 REPO_DIRECTORY = os.path.join(os.getcwd())
 ANDROID_DIRECTORY = os.path.join(REPO_DIRECTORY, "android")
