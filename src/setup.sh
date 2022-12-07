@@ -1,6 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-this_directory="$(dirname "$0")"
+this_directory="$(dirname "$BASH_SOURCE[0]")"
 PATH="$PATH:$(readlink -m "$this_directory")/bin"
 g () { 
 	p="$(workspace_bookmark.py "$1")";
