@@ -91,7 +91,7 @@ def test_print_warning_if_env_is_unset(capsys):
     assert warning_message == capsys.readouterr().err.strip()
 
 
-def test_gracefull_exit_if_not_in_workspace(capsys):
+def test_graceful_exit_if_not_in_workspace(capsys):
     """
     Make sure to print a helpful error message if workspace root can't be
     found.
@@ -109,7 +109,7 @@ def test_gracefull_exit_if_not_in_workspace(capsys):
     assert error_code == 1
 
 
-def test_gracefull_exit_if_destination_is_not_bookmarked(capsys):
+def test_graceful_exit_if_destination_is_not_bookmarked(capsys):
     """
     Make sure to print a helpful error message if a chosen destination is not
     in WORKSPACE_BOOKMARKS.
