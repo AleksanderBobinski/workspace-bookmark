@@ -15,34 +15,33 @@ import workspace_bookmark
 
 # Main function tests
 def test_print_path_to_workspace_root_by_default(capsys, REPO_DIRECTORY,
-                                                 ANDROID_DIRECTORY):
+                                                 _current_location_inside_repo_workspace):
     """
     By default print path to directory which contains .repo.
 
     /test/android $ g
     /test $
     """
-    os.chdir(ANDROID_DIRECTORY)
     workspace_bookmark.main("")
     assert REPO_DIRECTORY == capsys.readouterr().out.strip()
 
 
 def test_print_path_to_workspace_root_by_default_with_env_set(capsys,
                                                               REPO_DIRECTORY,
-                                                              ANDROID_DIRECTORY):
+                                                              _current_location_inside_repo_workspace):
     """
     By default print path to directory which contains .repo.
 
     /test/android $ g
     /test $
     """
-    os.chdir(ANDROID_DIRECTORY)
     os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
     workspace_bookmark.main("")
     assert REPO_DIRECTORY == capsys.readouterr().out.strip()
 
 
-def test_print_path_to_specified_destination(capsys, ANDROID_DIRECTORY,
+def test_print_path_to_specified_destination(capsys,
+                                             _current_location_inside_repo_workspace,
                                              BUILD_DIRECTORY):
     """
     Print path to specified directory based on a provided lookup table.
@@ -50,14 +49,13 @@ def test_print_path_to_specified_destination(capsys, ANDROID_DIRECTORY,
     The lookup table is a JSON file stored in the environment variable
     WORKSPACE_BOOKMARKS.
     """
-    os.chdir(ANDROID_DIRECTORY)
     os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
     workspace_bookmark.main("build")
     assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
 
 
 def test_print_path_to_specified_destination_any_beyond(capsys,
-                                                        ANDROID_DIRECTORY,
+                                                        _current_location_inside_repo_workspace,
                                                         BUILD_DIRECTORY):
     """
     Print path to specified directory based on a provided lookup table while
@@ -67,18 +65,17 @@ def test_print_path_to_specified_destination_any_beyond(capsys,
     $ workspace_bookmark.py bookmark/some/path
     /abs/path/to/bookmark/some/path
     """
-    os.chdir(ANDROID_DIRECTORY)
     os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"poky": "poky"})
     workspace_bookmark.main("poky/build")
     assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
 
 
-def test_print_warning_if_env_is_unset(capsys, ANDROID_DIRECTORY):
+def test_print_warning_if_env_is_unset(capsys,
+                                       _current_location_inside_repo_workspace):
     """
     Make sure to print a warning with instructions if the lookup table
     is not defined in WORKSPACE_BOOKMARKS.
     """
-    os.chdir(ANDROID_DIRECTORY)
     del os.environ["WORKSPACE_BOOKMARKS"]
     workspace_bookmark.main("")
     warning_message = \
@@ -92,12 +89,12 @@ def test_print_warning_if_env_is_unset(capsys, ANDROID_DIRECTORY):
     assert warning_message == capsys.readouterr().err.strip()
 
 
-def test_graceful_exit_if_not_in_workspace(capsys, REPO_DIRECTORY):
+def test_graceful_exit_if_not_in_workspace(capsys,
+                                           _current_location_outside_any_workspace):
     """
     Make sure to print a helpful error message if workspace root can't be
     found.
     """
-    os.chdir(os.path.join(REPO_DIRECTORY, ".."))
     os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
     error_code = workspace_bookmark.main("")
     exit_message = \
@@ -111,12 +108,11 @@ def test_graceful_exit_if_not_in_workspace(capsys, REPO_DIRECTORY):
 
 
 def test_graceful_exit_if_destination_is_not_bookmarked(capsys,
-                                                        ANDROID_DIRECTORY):
+                                                        _current_location_inside_repo_workspace):
     """
     Make sure to print a helpful error message if a chosen destination is not
     in WORKSPACE_BOOKMARKS.
     """
-    os.chdir(ANDROID_DIRECTORY)
     bookmarks = {"build": "poky/build"}
     os.environ["WORKSPACE_BOOKMARKS"] = json.dumps(bookmarks)
     destination = "someplace"
@@ -133,23 +129,23 @@ def test_graceful_exit_if_destination_is_not_bookmarked(capsys,
 
 
 # Unit tests
-def test_get_path_to_workspace_root(REPO_DIRECTORY, ANDROID_DIRECTORY):
+def test_get_path_to_workspace_root(REPO_DIRECTORY,
+                                    _current_location_inside_repo_workspace):
     """See if we can guess where the root of a workspace is."""
-    os.chdir(ANDROID_DIRECTORY)
     path_to_root = workspace_bookmark.path_to("root", {"root": "./"})
     assert REPO_DIRECTORY == path_to_root
 
 
-def test_get_path_to_specified_directory(ANDROID_DIRECTORY, BUILD_DIRECTORY):
+def test_get_path_to_specified_directory(_current_location_inside_repo_workspace,
+                                         BUILD_DIRECTORY):
     """
     Make sure get_path returns a path to the directory specified as a parameter
     that is present in a lookup table.
     """
-    os.chdir(ANDROID_DIRECTORY)
     bookmarks = {"build": "poky/build"}
     path_to_destination = workspace_bookmark.path_to(
-                                                    destination="build",
-                                                    bookmarks=bookmarks)
+        destination="build",
+        bookmarks=bookmarks)
     assert BUILD_DIRECTORY == path_to_destination
 
 
