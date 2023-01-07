@@ -12,14 +12,10 @@ import json
 import os.path
 import workspace_bookmark
 
-REPO_DIRECTORY = os.path.join(os.getcwd())
-ANDROID_DIRECTORY = os.path.join(REPO_DIRECTORY, "android")
-POKY_DIRECTORY = os.path.join(REPO_DIRECTORY, "poky")
-BUILD_DIRECTORY = os.path.join(REPO_DIRECTORY, "poky/build")
-
 
 # Main function tests
-def test_print_path_to_workspace_root_by_default(capsys):
+def test_print_path_to_workspace_root_by_default(capsys, REPO_DIRECTORY,
+                                                 ANDROID_DIRECTORY):
     """
     By default print path to directory which contains .repo.
 
@@ -31,7 +27,9 @@ def test_print_path_to_workspace_root_by_default(capsys):
     assert REPO_DIRECTORY == capsys.readouterr().out.strip()
 
 
-def test_print_path_to_workspace_root_by_default_with_env_set(capsys):
+def test_print_path_to_workspace_root_by_default_with_env_set(capsys,
+                                                              REPO_DIRECTORY,
+                                                              ANDROID_DIRECTORY):
     """
     By default print path to directory which contains .repo.
 
@@ -44,7 +42,8 @@ def test_print_path_to_workspace_root_by_default_with_env_set(capsys):
     assert REPO_DIRECTORY == capsys.readouterr().out.strip()
 
 
-def test_print_path_to_specified_destination(capsys):
+def test_print_path_to_specified_destination(capsys, ANDROID_DIRECTORY,
+                                             BUILD_DIRECTORY):
     """
     Print path to specified directory based on a provided lookup table.
 
@@ -57,7 +56,9 @@ def test_print_path_to_specified_destination(capsys):
     assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
 
 
-def test_print_path_to_specified_destination_any_beyond(capsys):
+def test_print_path_to_specified_destination_any_beyond(capsys,
+                                                        ANDROID_DIRECTORY,
+                                                        BUILD_DIRECTORY):
     """
     Print path to specified directory based on a provided lookup table while
     accounting for a path that is appended to the bookmark.
@@ -72,7 +73,7 @@ def test_print_path_to_specified_destination_any_beyond(capsys):
     assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
 
 
-def test_print_warning_if_env_is_unset(capsys):
+def test_print_warning_if_env_is_unset(capsys, ANDROID_DIRECTORY):
     """
     Make sure to print a warning with instructions if the lookup table
     is not defined in WORKSPACE_BOOKMARKS.
@@ -91,7 +92,7 @@ def test_print_warning_if_env_is_unset(capsys):
     assert warning_message == capsys.readouterr().err.strip()
 
 
-def test_graceful_exit_if_not_in_workspace(capsys):
+def test_graceful_exit_if_not_in_workspace(capsys, REPO_DIRECTORY):
     """
     Make sure to print a helpful error message if workspace root can't be
     found.
@@ -109,7 +110,8 @@ def test_graceful_exit_if_not_in_workspace(capsys):
     assert error_code == 1
 
 
-def test_graceful_exit_if_destination_is_not_bookmarked(capsys):
+def test_graceful_exit_if_destination_is_not_bookmarked(capsys,
+                                                        ANDROID_DIRECTORY):
     """
     Make sure to print a helpful error message if a chosen destination is not
     in WORKSPACE_BOOKMARKS.
@@ -131,14 +133,14 @@ def test_graceful_exit_if_destination_is_not_bookmarked(capsys):
 
 
 # Unit tests
-def test_get_path_to_workspace_root():
+def test_get_path_to_workspace_root(REPO_DIRECTORY, ANDROID_DIRECTORY):
     """See if we can guess where the root of a workspace is."""
     os.chdir(ANDROID_DIRECTORY)
     path_to_root = workspace_bookmark.path_to("root", {"root": "./"})
     assert REPO_DIRECTORY == path_to_root
 
 
-def test_get_path_to_specified_directory():
+def test_get_path_to_specified_directory(ANDROID_DIRECTORY, BUILD_DIRECTORY):
     """
     Make sure get_path returns a path to the directory specified as a parameter
     that is present in a lookup table.
@@ -152,7 +154,7 @@ def test_get_path_to_specified_directory():
 
 
 # Quirks
-def test_use_magic_file_instead_of_repo(capsys):
+def test_use_magic_file_instead_of_repo(capsys, POKY_DIRECTORY, BUILD_DIRECTORY):
     """
     Search for a user defined magic file instead of .repo.
 
