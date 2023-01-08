@@ -149,8 +149,11 @@ def test_get_path_to_specified_directory(_current_location_inside_repo_workspace
     assert BUILD_DIRECTORY == path_to_destination
 
 
-# Quirks
-def test_use_magic_file_instead_of_repo(capsys, POKY_DIRECTORY, BUILD_DIRECTORY):
+def test_use_magic_file_instead_of_repo(capsys,
+                                        _current_location_inside_repo_workspace,
+                                        magic_workspace,
+                                        magic_directory,
+                                        _workspace_bookmark_magic_file_env):
     """
     Search for a user defined magic file instead of .repo.
 
@@ -158,12 +161,11 @@ def test_use_magic_file_instead_of_repo(capsys, POKY_DIRECTORY, BUILD_DIRECTORY)
     workspace search for a user specified magic file instead to determine where
     workspace root is located.
     """
-    os.chdir(POKY_DIRECTORY)
-    bookmarks = {"build": "build"}
+    bookmarks = {"magic": str(magic_directory.relative_to(magic_workspace))}
     os.environ["WORKSPACE_BOOKMARKS"] = json.dumps(bookmarks)
-    workspace_root_magic_file = "build"
-    os.environ["WORKSPACE_BOOKMARK_MAGIC_FILE"] = workspace_root_magic_file
 
-    workspace_bookmark.main("build")
+    error_code = workspace_bookmark.main("magic")
+    stdout = capsys.readouterr().out.strip()
 
-    assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
+    assert error_code == 0
+    assert str(magic_directory) == stdout

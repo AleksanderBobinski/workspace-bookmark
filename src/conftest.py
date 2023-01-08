@@ -31,6 +31,12 @@ def get_magic_filename():
     return get_random_string(alphabet, name_length)
 
 
+@pytest.fixture(name="_workspace_bookmark_magic_file_env")
+def set_workspace_bookmark_magic_file_environment(monkeypatch, magic_filename):
+    """Set WORKSPACE_BOOKMARK_MAGIC_FILE."""
+    monkeypatch.setenv("WORKSPACE_BOOKMARK_MAGIC_FILE", magic_filename)
+
+
 @pytest.fixture(name="magic_workspace")
 def construct_magic_workspace(tmp_path, magic_filename):
     """Construct an outer magic workspace used for testing."""
@@ -39,6 +45,12 @@ def construct_magic_workspace(tmp_path, magic_filename):
     wsmagic = magic_workspace_root / magic_filename
     wsmagic.mkdir()
     return magic_workspace_root
+
+
+@pytest.fixture(name="magic_directory")
+def get_magic_file_directory(magic_workspace, magic_filename):
+    """Return path to a workspace's magic directory."""
+    return magic_workspace / magic_filename
 
 
 @pytest.fixture(name="repo_workspace")
