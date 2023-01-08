@@ -108,6 +108,30 @@ The tool is separated into two parts:
 * `g` - the tool which calls cd
 * `workspace_bookmarks.py` - the tool which provides an absolute path to jump to
 
+For a workspace:
+
+```text
+outside
+└── magic_ws
+    ├── repo_ws_1
+    │   ├── android
+    │   │   └── vendor
+    │   ├── poky
+    │   │   └── build
+    │   └── .repo
+    ├── repo_ws_2
+    │   ├── android
+    │   ├── poky
+    │   │   └── build
+    │   └── .repo
+    └── .wsmagic
+```
+
+The tool must understand both "current" and "target" locations which cross
+.repo workspace boundaries but remain in "magic" workspace bounds.
+
+![](./workspace_representation.drawio.png)
+
 ## Usage
 
 Things to put into your .bashrc or .zshrc:
