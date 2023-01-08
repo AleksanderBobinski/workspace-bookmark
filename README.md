@@ -85,7 +85,7 @@ export WORKSPACE_BOOKMARKS='{
 Using the WORKSPACE_BOOKMARKS from above for a regular workspace we would get:
 
 |cwd |bookmark|new cwd       |
-------------------------------
+|----|--------|--------------|
 |root|build   |poky/build    |
 |root|vendor  |android/vendor|
 |root|repo    |.repo         |
@@ -93,7 +93,7 @@ Using the WORKSPACE_BOOKMARKS from above for a regular workspace we would get:
 For a pathological workspace we would get:
 
 |cwd             |bookmark|new cwd             |
-------------------------------------------------
+|----------------|--------|--------------------|
 |root            |build   |case2/poky/build    |
 |root            |vendor  |case1/android/vendor|
 |case1/poky/build|repo    |case1/.repo         |
