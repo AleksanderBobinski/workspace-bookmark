@@ -69,12 +69,6 @@ def construct_repo_workspace(magic_workspace):
     return repo_workspace_root
 
 
-@pytest.fixture(name="REPO_DIRECTORY")
-def get_workspace_root(repo_workspace):
-    """Return path to a workspace's root directory."""
-    return str(repo_workspace)
-
-
 @pytest.fixture(name="ANDROID_DIRECTORY")
 def get_android_directory(repo_workspace):
     """Return path to a android directory."""

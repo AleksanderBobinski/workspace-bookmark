@@ -14,7 +14,7 @@ import workspace_bookmark
 
 
 # Main function tests
-def test_print_path_to_workspace_root_by_default(capsys, REPO_DIRECTORY,
+def test_print_path_to_workspace_root_by_default(capsys, repo_workspace,
                                                  _current_location_inside_repo_workspace):
     """
     By default print path to directory which contains .repo.
@@ -23,11 +23,11 @@ def test_print_path_to_workspace_root_by_default(capsys, REPO_DIRECTORY,
     /test $
     """
     workspace_bookmark.main("")
-    assert REPO_DIRECTORY == capsys.readouterr().out.strip()
+    assert str(repo_workspace) == capsys.readouterr().out.strip()
 
 
 def test_print_path_to_workspace_root_by_default_with_env_set(capsys,
-                                                              REPO_DIRECTORY,
+                                                              repo_workspace,
                                                               _current_location_inside_repo_workspace):
     """
     By default print path to directory which contains .repo.
@@ -37,7 +37,7 @@ def test_print_path_to_workspace_root_by_default_with_env_set(capsys,
     """
     os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
     workspace_bookmark.main("")
-    assert REPO_DIRECTORY == capsys.readouterr().out.strip()
+    assert str(repo_workspace) == capsys.readouterr().out.strip()
 
 
 def test_print_path_to_specified_destination(capsys,
@@ -129,11 +129,11 @@ def test_graceful_exit_if_destination_is_not_bookmarked(capsys,
 
 
 # Unit tests
-def test_get_path_to_workspace_root(REPO_DIRECTORY,
+def test_get_path_to_workspace_root(repo_workspace,
                                     _current_location_inside_repo_workspace):
     """See if we can guess where the root of a workspace is."""
     path_to_root = workspace_bookmark.path_to("root", {"root": "./"})
-    assert REPO_DIRECTORY == path_to_root
+    assert str(repo_workspace) == path_to_root
 
 
 def test_get_path_to_specified_directory(_current_location_inside_repo_workspace,
