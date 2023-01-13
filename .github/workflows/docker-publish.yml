@@ -13,25 +13,28 @@ on:
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
     paths: 
-      - 'Dockerfile'
+      - 'docker/test/Dockerfile'
       - '.github/workflows/docker-publish.yml'
   pull_request:
     branches: [ "develop" ]
     paths:
-      - 'Dockerfile'
+      - 'docker/test/Dockerfile'
       - '.github/workflows/docker-publish.yml'
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
-
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dockerfile: ./docker/test/Dockerfile
+            image: ${{ github.repository }}-test
     permissions:
       contents: read
       packages: write
@@ -72,7 +75,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@507c2f2dc502c992ad446e3d7a5dfbe311567a96
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ matrix.image }}
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
@@ -81,6 +84,7 @@ jobs:
         uses: docker/build-push-action@c56af957549030174b10d6867f20e78cfd7debc5
         with:
           context: .
+          file: ${{ matrix.dockerfile }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
