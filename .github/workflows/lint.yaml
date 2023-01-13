@@ -1,0 +1,12 @@
+name: lint
+on: [push]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: ghcr.io/aleksanderbobinski/workspace-bookmark-lint:develop
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ./workspace-bookmark
+      - run: 'find ./workspace-bookmark/src -iregex .*py -print0 | xargs -n 1 -0 pylint'
+
