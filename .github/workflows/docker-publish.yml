@@ -22,6 +22,7 @@ on:
       - 'docker/test/Dockerfile'
       - 'docker/lint/Dockerfile'
       - '.github/workflows/docker-publish.yml'
+  workflow_call:
 
 env:
   # Use docker.io for Docker Hub if empty
