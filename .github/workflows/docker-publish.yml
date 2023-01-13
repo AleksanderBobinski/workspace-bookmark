@@ -14,11 +14,13 @@ on:
     tags: [ 'v*.*.*' ]
     paths: 
       - 'docker/test/Dockerfile'
+      - 'docker/lint/Dockerfile'
       - '.github/workflows/docker-publish.yml'
   pull_request:
     branches: [ "develop" ]
     paths:
       - 'docker/test/Dockerfile'
+      - 'docker/lint/Dockerfile'
       - '.github/workflows/docker-publish.yml'
 
 env:
@@ -35,6 +37,8 @@ jobs:
         include:
           - dockerfile: ./docker/test/Dockerfile
             image: ${{ github.repository }}-test
+          - dockerfile: ./docker/lint/Dockerfile
+            image: ${{ github.repository }}-lint
     permissions:
       contents: read
       packages: write
