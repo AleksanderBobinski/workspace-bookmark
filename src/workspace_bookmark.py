@@ -72,7 +72,9 @@ def main(destination: str = "") -> int:
         path_to_append = ""
     destination = bookmark_path[0]
     try:
-        print(path_to(destination, json.loads(bookmarks), magic_file) + path_to_append)
+        destination = path_to(destination, json.loads(bookmarks), magic_file)
+        final_destination = destination + path_to_append
+        print(final_destination)
     except FileNotFoundError:
         print(
             "Warning: There is no .repo directory in or above the current "

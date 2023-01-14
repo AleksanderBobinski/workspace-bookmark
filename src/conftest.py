@@ -76,7 +76,7 @@ def get_build_directory(repo_workspace):
     return repo_workspace / "poky/build"
 
 
-@pytest.fixture(name="_current_location_outside_any_workspace")
+@pytest.fixture(name="_cwd_outside_any_workspace")
 def set_current_location_to_outside_any_workspace(monkeypatch, tmp_path):
     """Return path to random location outside workspace."""
     current_location = tmp_path / get_random_directory_name()
@@ -84,7 +84,7 @@ def set_current_location_to_outside_any_workspace(monkeypatch, tmp_path):
     monkeypatch.chdir(current_location)
 
 
-@pytest.fixture(name="_current_location_inside_repo_workspace")
+@pytest.fixture(name="_cwd_inside_repo_workspace")
 def set_current_location_to_inside_repo_workspace(monkeypatch, repo_workspace):
     """Return path to random location inside workspace."""
     current_location = repo_workspace / get_random_directory_name()

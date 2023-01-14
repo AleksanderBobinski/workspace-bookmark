@@ -22,7 +22,7 @@ import workspace_bookmark
 def test_print_path_to_workspace_root_by_default(
     capsys,
     repo_workspace,
-    _current_location_inside_repo_workspace,
+    _cwd_inside_repo_workspace,
     _workspace_bookmarks_env,
 ):
     """
@@ -36,7 +36,7 @@ def test_print_path_to_workspace_root_by_default(
 
 
 def test_print_path_to_specified_destination(
-    capsys, _current_location_inside_repo_workspace, repo_workspace, build_directory
+    capsys, _cwd_inside_repo_workspace, repo_workspace, build_directory
 ):
     """
     Print path to specified directory based on a provided lookup table.
@@ -54,7 +54,7 @@ def test_print_path_to_specified_destination(
 
 
 def test_print_path_to_specified_destination_any_beyond(
-    capsys, _current_location_inside_repo_workspace, repo_workspace, build_directory
+    capsys, _cwd_inside_repo_workspace, repo_workspace, build_directory
 ):
     """
     Print path to specified directory based on a provided lookup table while
@@ -75,7 +75,7 @@ def test_print_path_to_specified_destination_any_beyond(
     assert str(build_directory) == capsys.readouterr().out.strip()
 
 
-def test_print_warning_if_env_is_unset(capsys, _current_location_inside_repo_workspace):
+def test_print_warning_if_env_is_unset(capsys, _cwd_inside_repo_workspace):
     """
     Make sure to print a warning with instructions if the lookup table
     is not defined in WORKSPACE_BOOKMARKS.
@@ -94,9 +94,7 @@ def test_print_warning_if_env_is_unset(capsys, _current_location_inside_repo_wor
     assert warning_message == capsys.readouterr().err.strip()
 
 
-def test_graceful_exit_if_not_in_workspace(
-    capsys, _current_location_outside_any_workspace
-):
+def test_graceful_exit_if_not_in_workspace(capsys, _cwd_outside_any_workspace):
     """
     Make sure to print a helpful error message if workspace root can't be
     found.
@@ -115,7 +113,7 @@ def test_graceful_exit_if_not_in_workspace(
 
 
 def test_graceful_exit_if_destination_is_not_bookmarked(
-    capsys, _current_location_inside_repo_workspace
+    capsys, _cwd_inside_repo_workspace
 ):
     """
     Make sure to print a helpful error message if a chosen destination is not
@@ -138,16 +136,14 @@ def test_graceful_exit_if_destination_is_not_bookmarked(
 
 
 # Unit tests
-def test_get_path_to_workspace_root(
-    repo_workspace, _current_location_inside_repo_workspace
-):
+def test_path_to_workspace_root(repo_workspace, _cwd_inside_repo_workspace):
     """See if we can guess where the root of a workspace is."""
     path_to_root = workspace_bookmark.path_to("root", {"root": "./"})
     assert str(repo_workspace) == path_to_root
 
 
-def test_get_path_to_specified_directory(
-    _current_location_inside_repo_workspace, repo_workspace, build_directory
+def test_path_to_specified_directory(
+    _cwd_inside_repo_workspace, repo_workspace, build_directory
 ):
     """
     Make sure get_path returns a path to the directory specified as a parameter
@@ -164,7 +160,7 @@ def test_get_path_to_specified_directory(
 
 def test_use_magic_file_instead_of_repo(
     capsys,
-    _current_location_inside_repo_workspace,
+    _cwd_inside_repo_workspace,
     magic_workspace,
     magic_directory,
     _workspace_bookmark_magic_file_env,
