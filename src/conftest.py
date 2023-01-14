@@ -69,10 +69,10 @@ def construct_repo_workspace(magic_workspace):
     return repo_workspace_root
 
 
-@pytest.fixture(name="BUILD_DIRECTORY")
+@pytest.fixture(name="build_directory")
 def get_build_directory(repo_workspace):
     """Return path to a build directory."""
-    return str(repo_workspace / "poky/build")
+    return repo_workspace / "poky/build"
 
 
 @pytest.fixture(name="_current_location_outside_any_workspace")

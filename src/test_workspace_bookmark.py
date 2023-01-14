@@ -42,21 +42,26 @@ def test_print_path_to_workspace_root_by_default_with_env_set(capsys,
 
 def test_print_path_to_specified_destination(capsys,
                                              _current_location_inside_repo_workspace,
-                                             BUILD_DIRECTORY):
+                                             repo_workspace,
+                                             build_directory):
     """
     Print path to specified directory based on a provided lookup table.
 
     The lookup table is a JSON file stored in the environment variable
     WORKSPACE_BOOKMARKS.
     """
-    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
+    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps(
+        {"build": str(build_directory.relative_to(repo_workspace))})
+
     workspace_bookmark.main("build")
-    assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
+
+    assert str(build_directory) == capsys.readouterr().out.strip()
 
 
 def test_print_path_to_specified_destination_any_beyond(capsys,
                                                         _current_location_inside_repo_workspace,
-                                                        BUILD_DIRECTORY):
+                                                        repo_workspace,
+                                                        build_directory):
     """
     Print path to specified directory based on a provided lookup table while
     accounting for a path that is appended to the bookmark.
@@ -65,9 +70,14 @@ def test_print_path_to_specified_destination_any_beyond(capsys,
     $ workspace_bookmark.py bookmark/some/path
     /abs/path/to/bookmark/some/path
     """
-    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"poky": "poky"})
-    workspace_bookmark.main("poky/build")
-    assert BUILD_DIRECTORY == capsys.readouterr().out.strip()
+    poky_directory = build_directory.parent
+    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps(
+        {"poky": str(poky_directory.relative_to(repo_workspace))})
+    destination_suffix = build_directory.relative_to(poky_directory)
+
+    workspace_bookmark.main("poky/" + str(destination_suffix))
+
+    assert str(build_directory) == capsys.readouterr().out.strip()
 
 
 def test_print_warning_if_env_is_unset(capsys,
@@ -137,16 +147,19 @@ def test_get_path_to_workspace_root(repo_workspace,
 
 
 def test_get_path_to_specified_directory(_current_location_inside_repo_workspace,
-                                         BUILD_DIRECTORY):
+                                         repo_workspace,
+                                         build_directory):
     """
     Make sure get_path returns a path to the directory specified as a parameter
     that is present in a lookup table.
     """
-    bookmarks = {"build": "poky/build"}
+    bookmarks = {"build": str(build_directory.relative_to(repo_workspace))}
+
     path_to_destination = workspace_bookmark.path_to(
         destination="build",
         bookmarks=bookmarks)
-    assert BUILD_DIRECTORY == path_to_destination
+
+    assert str(build_directory) == path_to_destination
 
 
 def test_use_magic_file_instead_of_repo(capsys,
