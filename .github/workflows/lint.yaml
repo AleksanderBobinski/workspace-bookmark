@@ -1,10 +1,7 @@
 name: lint
 on: [push]
 jobs:
-  build-lint-docker-image:
-    uses: ./.github/workflows/docker-publish.yml
   lint:
-    needs: [build-lint-docker-image]
     runs-on: ubuntu-latest
     container: ghcr.io/aleksanderbobinski/workspace-bookmark-lint:develop
     steps:

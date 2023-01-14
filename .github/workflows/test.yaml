@@ -1,10 +1,7 @@
 name: test
 on: [push]
 jobs:
-  build-test-docker-image:
-    uses: ./.github/workflows/docker-publish.yml
   test:
-    needs: [build-test-docker-image]
     runs-on: ubuntu-latest
     container: ghcr.io/aleksanderbobinski/workspace-bookmark-test:develop
     steps:
