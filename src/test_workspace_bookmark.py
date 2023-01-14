@@ -10,32 +10,23 @@ shown in the tests below.
 """
 import json
 import os.path
+import pytest
+
 import workspace_bookmark
 
 
-# Main function tests
+@pytest.mark.parametrize("_workspace_bookmarks_env",
+                         ["_set_workspace_bookmarks_env",
+                          "_no_workspace_bookmarks_env"])
 def test_print_path_to_workspace_root_by_default(capsys, repo_workspace,
-                                                 _current_location_inside_repo_workspace):
+                                                 _current_location_inside_repo_workspace,
+                                                 _workspace_bookmarks_env):
     """
     By default print path to directory which contains .repo.
 
     /test/android $ g
     /test $
     """
-    workspace_bookmark.main("")
-    assert str(repo_workspace) == capsys.readouterr().out.strip()
-
-
-def test_print_path_to_workspace_root_by_default_with_env_set(capsys,
-                                                              repo_workspace,
-                                                              _current_location_inside_repo_workspace):
-    """
-    By default print path to directory which contains .repo.
-
-    /test/android $ g
-    /test $
-    """
-    os.environ["WORKSPACE_BOOKMARKS"] = json.dumps({"build": "poky/build"})
     workspace_bookmark.main("")
     assert str(repo_workspace) == capsys.readouterr().out.strip()
 

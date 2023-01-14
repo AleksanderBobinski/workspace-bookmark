@@ -89,3 +89,15 @@ def set_current_location_to_inside_repo_workspace(monkeypatch, repo_workspace):
     current_location = repo_workspace / get_random_directory_name()
     current_location.mkdir(parents=True)
     monkeypatch.chdir(current_location)
+
+
+@pytest.fixture(name="_set_workspace_bookmarks_env")
+def set_workspace_bookmarks_env(monkeypatch):
+    """Set WORKSPACE_BOOKMARKS environment variable."""
+    monkeypatch.setenv("WORKSPACE_BOOKMARKS", "{}")
+
+
+@pytest.fixture(name="_no_workspace_bookmarks_env")
+def remove_workspace_bookmarks_env(monkeypatch):
+    """Make sure WORKSPACE_BOOKMARKS environment variable is not set."""
+    monkeypatch.delenv("WORKSPACE_BOOKMARKS")
