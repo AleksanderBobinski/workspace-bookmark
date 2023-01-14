@@ -10,7 +10,7 @@ import pytest
 
 def get_random_string(alphabet, length):
     """Return a random string of length using a specified alphabet."""
-    return ''.join(random.choices(alphabet, k=length))
+    return "".join(random.choices(alphabet, k=length))
 
 
 def get_random_directory_name():
@@ -18,8 +18,9 @@ def get_random_directory_name():
     name_length = 20
     alphabet = string.ascii_letters + string.digits
     first_letter = get_random_string(alphabet, 1)
-    random_directory_name = first_letter + \
-        get_random_string(alphabet + "/", name_length - 1)
+    random_directory_name = first_letter + get_random_string(
+        alphabet + "/", name_length - 1
+    )
     return random_directory_name
 
 

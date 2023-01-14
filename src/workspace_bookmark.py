@@ -16,9 +16,9 @@ import sys
 from typing import Dict
 
 
-def path_to(destination: str,
-            bookmarks: Dict[str, str],
-            magic_file: str = ".repo") -> str:
+def path_to(
+    destination: str, bookmarks: Dict[str, str], magic_file: str = ".repo"
+) -> str:
     """Return path to desired destination based on a lookup table."""
     workspace_root = os.getcwd()
     while magic_file not in os.listdir(workspace_root):
@@ -42,13 +42,16 @@ def main(destination: str = "") -> int:
         bookmarks = os.environ["WORKSPACE_BOOKMARKS"]
     except KeyError:
         bookmarks = json.dumps(default_destination)
-        print("Warning: WORKSPACE_BOOKMARKS is not set.\n"
-              "Try setting it to something similar to this:\n"
-              "export WORKSPACE_BOOKMARKS='{\n"
-              "  \"build\": \"poky/build\",\n"
-              "  \"android\": \"android\",\n"
-              "  \"manifest\": \".repo/manifests\"\n"
-              "}'", file=sys.stderr)
+        print(
+            "Warning: WORKSPACE_BOOKMARKS is not set.\n"
+            "Try setting it to something similar to this:\n"
+            "export WORKSPACE_BOOKMARKS='{\n"
+            '  "build": "poky/build",\n'
+            '  "android": "android",\n'
+            '  "manifest": ".repo/manifests"\n'
+            "}'",
+            file=sys.stderr,
+        )
     if destination == "":
         # When g is called without parameters
         # $ g
@@ -69,27 +72,29 @@ def main(destination: str = "") -> int:
         path_to_append = ""
     destination = bookmark_path[0]
     try:
-        print(path_to(destination,
-                      json.loads(bookmarks),
-                      magic_file) + path_to_append)
+        print(path_to(destination, json.loads(bookmarks), magic_file) + path_to_append)
     except FileNotFoundError:
-        print("Warning: There is no .repo directory in or above the current "
-              "directory.\nThis tool is intended to work in different "
-              "workspaces that have a common\nlayout as is often the case "
-              "with workspaces downloaded by repo. If this\nis not your "
-              "use-case switch to autojump-rs or propose an improvement to\n"
-              "this script.",
-              file=sys.stderr)
+        print(
+            "Warning: There is no .repo directory in or above the current "
+            "directory.\nThis tool is intended to work in different "
+            "workspaces that have a common\nlayout as is often the case "
+            "with workspaces downloaded by repo. If this\nis not your "
+            "use-case switch to autojump-rs or propose an improvement to\n"
+            "this script.",
+            file=sys.stderr,
+        )
         return 1
     except KeyError:
         proposed_bookmarks = json.loads(bookmarks)
         proposed_bookmarks[destination] = "<YOUR PATH>"
         proposed_bookmarks = json.dumps(proposed_bookmarks, indent=2)
-        print(f"Warning: There is no \"{destination}\" in WORKSPACE_BOOKMARKS."
-              "\nTry setting it:\n"
-              f"export WORKSPACE_BOOKMARKS='{proposed_bookmarks}'",
-              file=sys.stderr,
-              end="")
+        print(
+            f'Warning: There is no "{destination}" in WORKSPACE_BOOKMARKS.'
+            "\nTry setting it:\n"
+            f"export WORKSPACE_BOOKMARKS='{proposed_bookmarks}'",
+            file=sys.stderr,
+            end="",
+        )
         return 2
     return 0
 
