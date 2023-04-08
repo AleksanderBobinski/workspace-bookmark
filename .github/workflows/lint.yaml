@@ -9,6 +9,6 @@ jobs:
         with:
           path: ./workspace-bookmark
       - run: 'black --check --diff ./workspace-bookmark/src'
-      - run: 'flake8 ./workspace-bookmark/src'
+      - run: 'cd workspace-bookmark && flake8 ./src'
       - run: 'find ./workspace-bookmark/src -iregex .*py -print0 | xargs -n 1 -0 pylint'
 
