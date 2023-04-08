@@ -3,6 +3,7 @@
 """Contains pytest fixtures which are globally available."""
 
 import random
+import pathlib
 import string
 
 import pytest
@@ -32,6 +33,21 @@ def get_magic_filename():
     return get_random_string(alphabet, name_length)
 
 
+@pytest.fixture(name="bookmark")
+def get_bookmark():
+    """Return a random bookmark as a str:str pair."""
+    alphabet = string.ascii_letters + string.digits
+    name_length = 20
+    bookmark = {get_random_string(alphabet, name_length): get_random_directory_name()}
+    return bookmark
+
+
+@pytest.fixture(name="bookmarks")
+def get_all_bookmarks(bookmark):
+    """Get all defined bookmarks."""
+    return {**bookmark}
+
+
 @pytest.fixture(name="_workspace_bookmark_magic_file_env")
 def set_workspace_bookmark_magic_file_environment(monkeypatch, magic_filename):
     """Set WORKSPACE_BOOKMARK_MAGIC_FILE."""
@@ -55,8 +71,8 @@ def get_magic_file_directory(magic_workspace, magic_filename):
 
 
 @pytest.fixture(name="repo_workspace")
-def construct_repo_workspace(magic_workspace):
-    """Construct an inner .repo workspace used for testing."""
+def construct_repo_workspace(magic_workspace, bookmarks):
+    """Construct an inner .repo workspace used for testing based on bookmarks."""
     repo_workspace_root = magic_workspace / get_random_directory_name()
     repo_workspace_root.mkdir(parents=True)
     repo = repo_workspace_root / ".repo"
@@ -67,6 +83,8 @@ def construct_repo_workspace(magic_workspace):
     poky.mkdir()
     build = repo_workspace_root / "poky" / "build"
     build.mkdir()
+    for path in bookmarks.values():
+        pathlib.Path(repo_workspace_root / path).mkdir(parents=True)
     return repo_workspace_root
 
 
