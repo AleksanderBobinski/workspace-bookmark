@@ -11,6 +11,8 @@ This script works along with a function defined in .bashrc
 g () { p=$(workspace-bookmark.py $1) && cd $p || echo $p; }
 """
 import json
+import copy
+import re
 import os
 import sys
 from typing import Dict
@@ -27,6 +29,30 @@ def path_to(
     return os.path.abspath(path)
 
 
+def expand_optional_prefix(bookmarks: Dict[str, str]) -> Dict[str, str]:
+    """
+    The lookup table comes with paths which contain a special syntax '{}'.
+    This syntax can only begin at the beginning of the path.
+    The portion inside '{}' is optional. Expand the optional part by removing
+    '{' and '}'. Thus creating a lookup table for preferred jump location.
+    """
+    bookmarks = copy.deepcopy(bookmarks)
+    for bookmark, path in bookmarks.items():
+        bookmarks[bookmark] = path.replace("{", "").replace("}", "")
+    return bookmarks
+
+
+def remove_optional_prefix(bookmarks: Dict[str, str]) -> Dict[str, str]:
+    """
+    Return bookmarks with but '{''}' and everything inside them removed. This creates
+    a backup lookup table in case the preferred location is not found.
+    """
+    bookmarks = copy.deepcopy(bookmarks)
+    for bookmark, path in bookmarks.items():
+        bookmarks[bookmark] = re.sub("{.*}", "", path)
+    return bookmarks
+
+
 class WorkspaceRootNotFoundError(Exception):
     """This error is thrown when .repo or WORKSPACE_BOOKMARK_MAGIC_FILE is not found."""
 
@@ -35,7 +61,7 @@ class BookmarkNotFoundError(Exception):
     """This error is thrown when the requested bookmark is not found."""
 
 
-def bookmark(destination: str = "") -> str:
+def bookmark(desired_destination: str = "") -> str:
     """
     Print path to destination directory.
 
@@ -60,28 +86,38 @@ def bookmark(destination: str = "") -> str:
             "}'",
             file=sys.stderr,
         )
-    if destination == "":
+    if desired_destination == "":
         # When g is called without parameters
         # $ g
         # The first parameter $1 is actually ""
-        destination = list(default_destination)[0]
+        desired_destination = list(default_destination)[0]
         overwritten_bookmarks = json.loads(bookmarks)
-        overwritten_bookmarks[destination] = default_destination[destination]
+        overwritten_bookmarks[desired_destination] = default_destination[
+            desired_destination
+        ]
         bookmarks = json.dumps(overwritten_bookmarks)
 
     # There are many edge cases here but none of them are considered.
     # 1. Bookmark has a '/' in it's name.
     # 2. There are two or more bookmarks named "one" and "one/one".
     # 3. A bookmark is in the path destination_bookmark/path/bookmark/
-    bookmark_path = destination.split("/")
+    bookmark_path = desired_destination.split("/")
     if len(bookmark_path) > 1:
         path_to_append = "/" + "/".join(bookmark_path[1:])
     else:
         path_to_append = ""
-    destination = bookmark_path[0]
+    desired_destination = bookmark_path[0]
+    preferred_bookmarks = expand_optional_prefix(json.loads(bookmarks))
+    backup_bookmarks = remove_optional_prefix(json.loads(bookmarks))
     try:
-        destination = path_to(destination, json.loads(bookmarks), magic_file)
-        final_destination = destination + path_to_append
+        resulting_destination = path_to(
+            desired_destination, preferred_bookmarks, magic_file
+        )
+        if not os.path.isdir(resulting_destination):
+            resulting_destination = path_to(
+                desired_destination, backup_bookmarks, magic_file
+            )
+        final_destination = resulting_destination + path_to_append
         return final_destination
     except FileNotFoundError as exception:
         print(
@@ -96,10 +132,10 @@ def bookmark(destination: str = "") -> str:
         raise WorkspaceRootNotFoundError() from exception
     except KeyError as exception:
         proposed_bookmarks = json.loads(bookmarks)
-        proposed_bookmarks[destination] = "<YOUR PATH>"
+        proposed_bookmarks[desired_destination] = "<YOUR PATH>"
         proposed_bookmarks = json.dumps(proposed_bookmarks, indent=2)
         print(
-            f'Warning: There is no "{destination}" in WORKSPACE_BOOKMARKS.'
+            f'Warning: There is no "{desired_destination}" in WORKSPACE_BOOKMARKS.'
             "\nTry setting it:\n"
             f"export WORKSPACE_BOOKMARKS='{proposed_bookmarks}'",
             file=sys.stderr,

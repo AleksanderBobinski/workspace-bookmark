@@ -3,6 +3,7 @@
 """Contains pytest fixtures which are globally available."""
 
 import random
+import os
 import pathlib
 import string
 
@@ -42,10 +43,83 @@ def get_bookmark():
     return bookmark
 
 
-@pytest.fixture(name="bookmarks")
-def get_all_bookmarks(bookmark):
-    """Get all defined bookmarks."""
-    return {**bookmark}
+@pytest.fixture
+def existing_prefixed_path_bookmark_path(repo_workspace_root):
+    """
+    Return a path to an existing directory inside a repo workspace.
+
+    The reason to have the directory nested at least three times is that the first
+    two subdirectories are supposed to be wrapped inside an optional prefix.
+    """
+    return (
+        repo_workspace_root
+        / get_random_directory_name()
+        / get_random_directory_name()
+        / get_random_directory_name()
+    )
+
+
+@pytest.fixture
+def not_existing_prefixed_path_bookmark_backup_path(repo_workspace_root):
+    """
+    Return a path to an existing directory inside a repo workspace.
+
+    This path is supposed to be extended to include an non-existent optional prefix.
+    This path is supposed to be a valid fallback for when it becomes that the path
+    with an optional prefix included doesn't exist.
+    """
+    return repo_workspace_root / get_random_directory_name()
+
+
+@pytest.fixture
+def repo_workspace_root(magic_workspace):
+    """Return a path to a repo workspace inside a magic workspace."""
+    return magic_workspace / get_random_directory_name()
+
+
+@pytest.fixture
+def existing_prefixed_path_bookmark(
+    existing_prefixed_path_bookmark_path, repo_workspace_root
+):
+    """Return a random bookmark with a prefixed path as a str:str pair."""
+    alphabet = string.ascii_letters + string.digits
+    name_length = 20
+    bookmark_name = get_random_string(alphabet, name_length)
+    prefixed_path = "{" + str(
+        os.path.relpath(existing_prefixed_path_bookmark_path, repo_workspace_root)
+    )
+    second_nested_dir = prefixed_path.find("/") + 1
+    prefixed_path = prefixed_path[:second_nested_dir] + prefixed_path[
+        second_nested_dir:
+    ].replace("/", "/}", 1)
+
+    return {bookmark_name: prefixed_path}
+
+
+@pytest.fixture
+def not_existing_prefixed_path_bookmark_backup(
+    not_existing_prefixed_path_bookmark_backup_path, repo_workspace_root
+):
+    """
+    Return a path to a repo workspace inside a magic workspace.
+
+    The prefixed path doesn't exist but the backup path, the one
+    without the prefix does exist.
+    """
+    alphabet = string.ascii_letters + string.digits
+    name_length = 20
+    bookmark_name = get_random_string(alphabet, name_length)
+    prefixed_path = (
+        "{"
+        + get_random_directory_name()
+        + "/}"
+        + str(
+            os.path.relpath(
+                not_existing_prefixed_path_bookmark_backup_path, repo_workspace_root
+            )
+        )
+    )
+    return {bookmark_name: prefixed_path}
 
 
 @pytest.fixture(name="_workspace_bookmark_magic_file_env")
@@ -71,9 +145,14 @@ def get_magic_file_directory(magic_workspace, magic_filename):
 
 
 @pytest.fixture(name="repo_workspace")
-def construct_repo_workspace(magic_workspace, bookmarks):
+def construct_repo_workspace(
+    magic_workspace,
+    bookmark,
+    existing_prefixed_path_bookmark_path,
+    not_existing_prefixed_path_bookmark_backup_path,
+    repo_workspace_root,
+):
     """Construct an inner .repo workspace used for testing based on bookmarks."""
-    repo_workspace_root = magic_workspace / get_random_directory_name()
     repo_workspace_root.mkdir(parents=True)
     repo = repo_workspace_root / ".repo"
     repo.mkdir()
@@ -83,8 +162,11 @@ def construct_repo_workspace(magic_workspace, bookmarks):
     poky.mkdir()
     build = repo_workspace_root / "poky" / "build"
     build.mkdir()
-    for path in bookmarks.values():
+    for path in bookmark.values():
         pathlib.Path(repo_workspace_root / path).mkdir(parents=True)
+    existing_prefixed_path_bookmark_path.mkdir(parents=True)
+    not_existing_prefixed_path_bookmark_backup_path.mkdir(parents=True)
+
     return repo_workspace_root
 
 

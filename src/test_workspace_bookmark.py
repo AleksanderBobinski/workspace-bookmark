@@ -10,6 +10,7 @@ shown in the tests below.
 """
 import json
 import os.path
+
 import pytest
 
 import workspace_bookmark
@@ -180,3 +181,50 @@ def test_use_magic_file_instead_of_repo(
 
     assert error_code == 0
     assert str(magic_directory) == stdout
+
+
+def test_prefer_path_with_optional_prefix(
+    capsys,
+    monkeypatch,
+    _cwd_inside_repo_workspace,
+    repo_workspace,
+    existing_prefixed_path_bookmark,
+    existing_prefixed_path_bookmark_path,
+):
+    """Jump to a bookmark with which contains an optional prefix."""
+    monkeypatch.setenv(
+        "WORKSPACE_BOOKMARKS", json.dumps(existing_prefixed_path_bookmark)
+    )
+    requested_destination = tuple(existing_prefixed_path_bookmark.keys())[0]
+
+    error_code = workspace_bookmark.main(requested_destination)
+    stdout = capsys.readouterr().out.strip()
+
+    assert error_code == 0
+    assert str(repo_workspace / existing_prefixed_path_bookmark_path) == stdout
+
+
+def test_jump_to_regular_path_if_path_with_optional_prefix_does_not_exist(
+    capsys,
+    monkeypatch,
+    _cwd_inside_repo_workspace,
+    repo_workspace,
+    not_existing_prefixed_path_bookmark_backup,
+    not_existing_prefixed_path_bookmark_backup_path,
+):
+    """Jump to a regular path if the path with an optional prefix doesn't exist."""
+    monkeypatch.setenv(
+        "WORKSPACE_BOOKMARKS",
+        json.dumps(not_existing_prefixed_path_bookmark_backup),
+    )
+    requested_destination = tuple(not_existing_prefixed_path_bookmark_backup.keys())[0]
+    expected_path = not_existing_prefixed_path_bookmark_backup_path
+
+    error_code = workspace_bookmark.main(requested_destination)
+    stdout = capsys.readouterr().out.strip()
+
+    print(stdout)
+    print(expected_path)
+
+    assert error_code == 0
+    assert str(expected_path) == stdout
