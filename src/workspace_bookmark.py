@@ -27,7 +27,15 @@ def path_to(
     return os.path.abspath(path)
 
 
-def main(destination: str = "") -> int:
+class WorkspaceRootNotFoundError(Exception):
+    """This error is thrown when .repo or WORKSPACE_BOOKMARK_MAGIC_FILE is not found."""
+
+
+class BookmarkNotFoundError(Exception):
+    """This error is thrown when the requested bookmark is not found."""
+
+
+def bookmark(destination: str = "") -> str:
     """
     Print path to destination directory.
 
@@ -74,8 +82,8 @@ def main(destination: str = "") -> int:
     try:
         destination = path_to(destination, json.loads(bookmarks), magic_file)
         final_destination = destination + path_to_append
-        print(final_destination)
-    except FileNotFoundError:
+        return final_destination
+    except FileNotFoundError as exception:
         print(
             "Warning: There is no .repo directory in or above the current "
             "directory.\nThis tool is intended to work in different "
@@ -85,8 +93,8 @@ def main(destination: str = "") -> int:
             "this script.",
             file=sys.stderr,
         )
-        return 1
-    except KeyError:
+        raise WorkspaceRootNotFoundError() from exception
+    except KeyError as exception:
         proposed_bookmarks = json.loads(bookmarks)
         proposed_bookmarks[destination] = "<YOUR PATH>"
         proposed_bookmarks = json.dumps(proposed_bookmarks, indent=2)
@@ -97,6 +105,17 @@ def main(destination: str = "") -> int:
             file=sys.stderr,
             end="",
         )
+        raise BookmarkNotFoundError from exception
+
+
+def main(destination: str = ""):
+    """Print out commands that after executing them will cd into the right place."""
+    try:
+        absolute_destination = bookmark(destination)
+        print(absolute_destination)
+    except WorkspaceRootNotFoundError:
+        return 1
+    except BookmarkNotFoundError:
         return 2
     return 0
 
