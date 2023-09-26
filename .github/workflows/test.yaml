@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: ./workspace-bookmark
-      - run: 'rm -Rf test && ./workspace-bookmark/src/create_test_dir.sh'
+      - run: 'mkdir test'
       - run: bash -c 'cd test && python3 -m pytest ../workspace-bookmark/src/test_workspace_bookmark.py'
       - run: bash -c 'cd test && ../workspace-bookmark/src/test_g.bats'
 
