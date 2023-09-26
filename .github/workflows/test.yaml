@@ -13,5 +13,4 @@ jobs:
           path: ./workspace-bookmark
       - run: 'mkdir test'
       - run: bash -c 'cd test && python3 -m pytest ../workspace-bookmark/src/test_workspace_bookmark.py'
-      - run: bash -c 'cd test && ../workspace-bookmark/src/test_g.bats'
 

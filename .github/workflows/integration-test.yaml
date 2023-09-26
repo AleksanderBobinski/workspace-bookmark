@@ -1,0 +1,16 @@
+name: test
+on: [push]
+jobs:
+  build-integration-test-docker-image:
+    uses: ./.github/workflows/docker-publish.yml
+  integration-test:
+    needs: [build-integration-test-docker-image]
+    runs-on: ubuntu-latest
+    container: ghcr.io/aleksanderbobinski/workspace-bookmark-integration-test:develop
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ./workspace-bookmark
+      - run: 'mkdir test'
+      - run: bash -c 'cd test && ../workspace-bookmark/src/test_g.bats'
+

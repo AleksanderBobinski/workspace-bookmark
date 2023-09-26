@@ -13,12 +13,14 @@ on:
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
     paths: 
+      - 'docker/integration_test/Dockerfile'
       - 'docker/test/Dockerfile'
       - 'docker/lint/Dockerfile'
       - '.github/workflows/docker-publish.yml'
   pull_request:
     branches: [ "develop" ]
     paths:
+      - 'docker/integration_test/Dockerfile'
       - 'docker/test/Dockerfile'
       - 'docker/lint/Dockerfile'
       - '.github/workflows/docker-publish.yml'
@@ -36,6 +38,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - dockerfile: ./docker/integration_test/Dockerfile
+            image: ${{ github.repository }}-integration-test
           - dockerfile: ./docker/test/Dockerfile
             image: ${{ github.repository }}-test
           - dockerfile: ./docker/lint/Dockerfile
