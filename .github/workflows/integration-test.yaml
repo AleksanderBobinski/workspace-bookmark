@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/aleksanderbobinski/workspace-bookmark-integration-test:${{ github.ref_name }}
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v3.6.0
         with:
           path: ./workspace-bookmark
       - run: 'mkdir test'
