@@ -103,8 +103,8 @@ For a pathological workspace we would get:
 |root            |vendor  |case1/android/vendor|
 |case1/poky/build|repo    |case1/.repo         |
 
-Note how in case of ambiguous locations (to .repo for example) the tool targets
-the one closer to the current location is picked.
+Note how in case of ambiguous locations (to .repo for example) the tool picks
+the one closer to the current location.
 
 ## Code
 
