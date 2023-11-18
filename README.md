@@ -21,6 +21,8 @@ in workspace root when calling it.
 
 ## Idea
 
+### General
+
 This tool guesses the root of a workspace by looking for .repo and than based
 on it's location jumps to a bookmark that is defined as a key: value pair. The
 key being the name and the value being a path relative to the workspace root.
@@ -29,6 +31,9 @@ This is predictable since a workspace only has one .repo directory. It allows
 to have two or more directories of the same name but different paths to be
 bookmarked and will always jump the correct directory inside the currently
 used workspace regardless of where inside the workspace the caller is.
+
+
+### Multiple repo workspaces in one actual workspace
 
 In pathological cases there can be multiple .repo directories in a workspace.
 For such situations you can override the default behavior and instead of
