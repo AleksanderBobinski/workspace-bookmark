@@ -6,7 +6,7 @@ jobs:
   integration-test:
     needs: [build-integration-test-docker-image]
     runs-on: ubuntu-latest
-    container: ghcr.io/aleksanderbobinski/workspace-bookmark-integration-test:develop
+    container: ghcr.io/aleksanderbobinski/workspace-bookmark-integration-test:${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4.1.1
         with:

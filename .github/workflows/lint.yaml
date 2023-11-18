@@ -6,7 +6,7 @@ jobs:
   lint:
     needs: [build-lint-docker-image]
     runs-on: ubuntu-latest
-    container: ghcr.io/aleksanderbobinski/workspace-bookmark-lint:develop
+    container: ghcr.io/aleksanderbobinski/workspace-bookmark-lint:${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4.1.1
         with:
