@@ -61,7 +61,7 @@ class BookmarkNotFoundError(Exception):
     """This error is thrown when the requested bookmark is not found."""
 
 
-def bookmark(desired_destination: str = "") -> str:
+def get_bookmarked_path(desired_destination: str = "") -> str:
     """
     Print path to destination directory.
 
@@ -147,7 +147,7 @@ def bookmark(desired_destination: str = "") -> str:
 def main(destination: str = ""):
     """Print out commands that after executing them will cd into the right place."""
     try:
-        absolute_destination = bookmark(destination)
+        absolute_destination = get_bookmarked_path(destination)
         print(absolute_destination)
     except WorkspaceRootNotFoundError:
         return 1
