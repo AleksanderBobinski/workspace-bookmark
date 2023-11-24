@@ -26,6 +26,13 @@ def get_random_directory_name():
     return random_directory_name
 
 
+def get_random_bookmark_name():
+    """Return a random bookmark name."""
+    name_length = 20
+    alphabet = string.ascii_letters + string.digits
+    return get_random_string(alphabet, name_length)
+
+
 @pytest.fixture(name="magic_filename")
 def get_magic_filename():
     """Get name used for WORKSPACE_BOOKMARK_MAGIC_FILE but don't set env."""
@@ -37,9 +44,7 @@ def get_magic_filename():
 @pytest.fixture(name="bookmark")
 def get_bookmark():
     """Return a random bookmark as a str:str pair."""
-    alphabet = string.ascii_letters + string.digits
-    name_length = 20
-    bookmark = {get_random_string(alphabet, name_length): get_random_directory_name()}
+    bookmark = {get_random_bookmark_name(): get_random_directory_name()}
     return bookmark
 
 
@@ -82,9 +87,6 @@ def existing_prefixed_path_bookmark(
     existing_prefixed_path_bookmark_path, repo_workspace_root
 ):
     """Return a random bookmark with a prefixed path as a str:str pair."""
-    alphabet = string.ascii_letters + string.digits
-    name_length = 20
-    bookmark_name = get_random_string(alphabet, name_length)
     prefixed_path = "{" + str(
         os.path.relpath(existing_prefixed_path_bookmark_path, repo_workspace_root)
     )
@@ -93,7 +95,7 @@ def existing_prefixed_path_bookmark(
         second_nested_dir:
     ].replace("/", "/}", 1)
 
-    return {bookmark_name: prefixed_path}
+    return {get_random_bookmark_name(): prefixed_path}
 
 
 @pytest.fixture
@@ -106,9 +108,6 @@ def not_existing_prefixed_path_bookmark_backup(
     The prefixed path doesn't exist but the backup path, the one
     without the prefix does exist.
     """
-    alphabet = string.ascii_letters + string.digits
-    name_length = 20
-    bookmark_name = get_random_string(alphabet, name_length)
     prefixed_path = (
         "{"
         + get_random_directory_name()
@@ -119,7 +118,7 @@ def not_existing_prefixed_path_bookmark_backup(
             )
         )
     )
-    return {bookmark_name: prefixed_path}
+    return {get_random_bookmark_name(): prefixed_path}
 
 
 @pytest.fixture(name="_workspace_bookmark_magic_file_env")
