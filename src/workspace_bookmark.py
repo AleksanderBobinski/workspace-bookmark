@@ -117,6 +117,10 @@ def get_bookmarked_path(desired_destination: str = "") -> str:
             resulting_destination = path_to(
                 desired_destination, backup_bookmarks, magic_file
             )
+        if not os.path.isdir(resulting_destination):
+            resulting_destination = path_to(
+                desired_destination, backup_bookmarks, ".repo"
+            )
         final_destination = resulting_destination + path_to_append
         return final_destination
     except FileNotFoundError as exception:

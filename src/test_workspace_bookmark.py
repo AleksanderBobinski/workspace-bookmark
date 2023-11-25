@@ -228,3 +228,22 @@ def test_jump_to_regular_path_if_path_with_optional_prefix_does_not_exist(
 
     assert error_code == 0
     assert str(expected_path) == stdout
+
+
+def test_fallback_to_repo_workspace_if_path_not_found_in_magic_workspace(
+    monkeypatch,
+    capsys,
+    _cwd_inside_repo_workspace,
+    _workspace_bookmark_magic_file_env,
+    bookmarked_path,
+    bookmark,
+):
+    """Make sure falling back to paths from a regular repo workspace works."""
+    expected_path = bookmarked_path
+    monkeypatch.setenv("WORKSPACE_BOOKMARKS", json.dumps(bookmark))
+
+    error_code = workspace_bookmark.main(list(bookmark.keys())[0])
+    stdout = capsys.readouterr().out.strip()
+
+    assert error_code == 0
+    assert str(expected_path) == stdout

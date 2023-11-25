@@ -4,7 +4,6 @@
 
 import random
 import os
-import pathlib
 import string
 
 import pytest
@@ -41,10 +40,20 @@ def get_magic_filename():
     return get_random_string(alphabet, name_length)
 
 
+@pytest.fixture
+def bookmarked_path(repo_workspace_root):
+    """Return an existing bookmarked path."""
+    return repo_workspace_root / get_random_directory_name()
+
+
 @pytest.fixture(name="bookmark")
-def get_bookmark():
+def get_bookmark(repo_workspace_root, bookmarked_path):
     """Return a random bookmark as a str:str pair."""
-    bookmark = {get_random_bookmark_name(): get_random_directory_name()}
+    bookmark = {
+        get_random_bookmark_name(): os.path.relpath(
+            bookmarked_path, repo_workspace_root
+        )
+    }
     return bookmark
 
 
@@ -146,10 +155,10 @@ def get_magic_file_directory(magic_workspace, magic_filename):
 @pytest.fixture(name="repo_workspace")
 def construct_repo_workspace(
     magic_workspace,
-    bookmark,
     existing_prefixed_path_bookmark_path,
     not_existing_prefixed_path_bookmark_backup_path,
     repo_workspace_root,
+    bookmarked_path,
 ):
     """Construct an inner .repo workspace used for testing based on bookmarks."""
     repo_workspace_root.mkdir(parents=True)
@@ -161,8 +170,7 @@ def construct_repo_workspace(
     poky.mkdir()
     build = repo_workspace_root / "poky" / "build"
     build.mkdir()
-    for path in bookmark.values():
-        pathlib.Path(repo_workspace_root / path).mkdir(parents=True)
+    bookmarked_path.mkdir(parents=True)
     existing_prefixed_path_bookmark_path.mkdir(parents=True)
     not_existing_prefixed_path_bookmark_backup_path.mkdir(parents=True)
 
